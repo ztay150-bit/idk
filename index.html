@@ -28,6 +28,7 @@
       overflow-x: hidden;
     }
 
+    /* Star canvas behind everything */
     #stars{
       position: fixed;
       inset: 0;
@@ -39,6 +40,7 @@
                   radial-gradient(900px 500px at 70% 70%, rgba(0,255,85,0.10), transparent 60%),
                   linear-gradient(#030404, #050607);
     }
+    /* Dark overlay to keep text readable */
     .page-overlay{
       position: fixed;
       inset: 0;
@@ -47,11 +49,13 @@
       pointer-events:none;
     }
 
+    /* Layout helpers */
     .container{
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
     }
 
+    /* Top announcement bar */
     .topbar{
       background: rgba(0,255,85,0.18);
       border-bottom: 1px solid rgba(50,255,106,0.25);
@@ -70,6 +74,7 @@
     }
     .topbar a:hover{ text-decoration: underline; }
 
+    /* Header */
     header{
       position: sticky;
       top: 0;
@@ -144,6 +149,7 @@
       transform: translateY(-1px);
     }
 
+    /* Hero */
     .hero{
       padding: 64px 0 34px;
       text-align:center;
@@ -211,6 +217,7 @@
       background: rgba(255,255,255,0.06);
     }
 
+    /* Section title */
     .section-title{
       text-align:center;
       padding: 34px 0 14px;
@@ -226,6 +233,7 @@
       font-size: 14px;
     }
 
+    /* Search */
     .searchbar{
       margin-top: 18px;
       display:flex;
@@ -249,6 +257,7 @@
     }
     .searchbar input::placeholder{ color: rgba(255,255,255,0.45); }
 
+    /* Grid */
     .grid{
       margin-top: 16px;
       display:grid;
@@ -328,7 +337,7 @@
       font-size: 14px;
     }
 
-    /* Buy button (replaces Gumroad) */
+    /* Stripe Buy button styling */
     .buy-button{
       display:inline-flex;
       align-items:center;
@@ -370,6 +379,7 @@
   <canvas id="stars"></canvas>
   <div class="page-overlay"></div>
 
+  <!-- TOP BAR -->
   <div class="topbar">
     <div class="container topbar-inner">
       ⚡ Want support? Join Discord:
@@ -377,10 +387,16 @@
     </div>
   </div>
 
+  <!-- HEADER -->
   <header>
     <div class="container header-inner">
       <div class="brand">
-        <div class="logo" title="Logo">ZP</div>
+        <div class="logo" title="Logo">
+          <!-- Optional: replace with your logo image:
+               <img src="logo.png" alt="logo" />
+          -->
+          ZP
+        </div>
         <span id="storeName">ZeroPoint</span>
       </div>
 
@@ -397,12 +413,13 @@
     </div>
   </header>
 
+  <!-- HERO -->
   <section id="home" class="hero">
     <div class="container">
       <div class="pill">✅ Fast delivery • ✅ Secure checkout • ✅ Support</div>
       <h1 id="heroTitle">ZeroPoint Market</h1>
       <p id="heroText">
-        Green & black space theme with a starfield background. Replace the products with your Stripe payment links.
+        A clean green & black storefront. Add your Stripe Payment Links below and customers can buy instantly.
       </p>
 
       <div class="cta">
@@ -412,6 +429,7 @@
     </div>
   </section>
 
+  <!-- PRODUCTS -->
   <section id="products">
     <div class="container">
       <div class="section-title">
@@ -428,6 +446,7 @@
     </div>
   </section>
 
+  <!-- FAQ -->
   <section id="faq">
     <div class="container">
       <div class="section-title">
@@ -463,144 +482,4 @@
     // ====== EDIT THESE SETTINGS ======
     const SETTINGS = {
       storeName: "ZeroPoint",
-      heroTitle: "ZeroPoint Market",
-      heroText: "Green & black space theme with a starfield background. Replace the products with your Stripe payment links.",
-      discordUrl: "https://discord.com/",      // <-- put your Discord invite link
-      contactEmail: "youremail@example.com"     // <-- put your email
-    };
-
-    // Put your products here (name, price, short desc, CHECKOUT URL)
-    // For Stripe Payment Links, each url looks like: https://buy.stripe.com/XXXX
-    const PRODUCTS = [
-      { name:"Product 01", price:"$5",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_01" },
-      { name:"Product 02", price:"$9",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_02" },
-      { name:"Product 03", price:"$3",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_03" },
-      { name:"Product 04", price:"$12", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_04" },
-      // ... keep going
-    ];
-    // ================================
-
-    // Apply settings
-    document.getElementById("storeName").textContent = SETTINGS.storeName;
-    document.getElementById("storeNameFooter").textContent = SETTINGS.storeName;
-    document.getElementById("heroTitle").textContent = SETTINGS.heroTitle;
-    document.getElementById("heroText").textContent = SETTINGS.heroText;
-
-    const discordEls = ["discordTop","discordBtn","discordCta"];
-    discordEls.forEach(id => {
-      const el = document.getElementById(id);
-      el.href = SETTINGS.discordUrl;
-    });
-
-    document.getElementById("contactBtn").href = `mailto:${SETTINGS.contactEmail}`;
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Render products
-    const grid = document.getElementById("grid");
-    const search = document.getElementById("search");
-
-    function render(list){
-      grid.innerHTML = list.map((p) => `
-        <div class="card">
-          <div class="thumb">
-            <div class="thumb-badge">ZP</div>
-          </div>
-          <div class="card-body">
-            <div class="name">${escapeHtml(p.name)}</div>
-            <div class="desc">${escapeHtml(p.desc || "")}</div>
-            <div class="row">
-              <div class="price">${escapeHtml(p.price || "")}</div>
-              <a class="buy-button" href="${p.url}" target="_blank" rel="noopener">Buy</a>
-            </div>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, s => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
-      }[s]));
-    }
-
-    render(PRODUCTS);
-
-    search.addEventListener("input", (e)=>{
-      const q = e.target.value.toLowerCase().trim();
-      const filtered = PRODUCTS.filter(p =>
-        (p.name || "").toLowerCase().includes(q) ||
-        (p.desc || "").toLowerCase().includes(q)
-      );
-      render(filtered);
-    });
-
-    // ====== Moving green starfield (canvas) ======
-    const canvas = document.getElementById("stars");
-    const ctx = canvas.getContext("2d");
-
-    let w, h, dpr;
-    let stars = [];
-
-    function resize(){
-      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      w = canvas.clientWidth = window.innerWidth;
-      h = canvas.clientHeight = window.innerHeight;
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      const count = Math.floor((w * h) / 9000);
-      stars = Array.from({length: count}, () => makeStar(true));
-    }
-
-    function makeStar(randomY){
-      return {
-        x: Math.random() * w,
-        y: (randomY ? Math.random() * h : -10),
-        r: Math.random() * 1.6 + 0.2,
-        a: Math.random() * 0.75 + 0.1,
-        s: Math.random() * 0.55 + 0.15,
-        tw: Math.random() * 0.6 + 0.4,
-      };
-    }
-
-    function draw(){
-      ctx.clearRect(0,0,w,h);
-
-      ctx.globalCompositeOperation = "lighter";
-      ctx.fillStyle = "rgba(50,255,106,0.02)";
-      ctx.beginPath();
-      ctx.ellipse(w*0.35, h*0.35, w*0.35, h*0.18, 0, 0, Math.PI*2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(w*0.70, h*0.70, w*0.30, h*0.16, 0, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.globalCompositeOperation = "source-over";
-      for (const st of stars){
-        st.y += st.s;
-        if (st.y > h + 10) Object.assign(st, makeStar(false));
-
-        const tw = 0.55 + 0.45 * Math.sin((Date.now()/800) * st.tw + st.x*0.01);
-        const alpha = st.a * tw;
-
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(50,255,106,${alpha * 0.6})`;
-        ctx.arc(st.x, st.y, st.r * 2.2, 0, Math.PI*2);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(200,255,215,${alpha})`;
-        ctx.arc(st.x, st.y, st.r, 0, Math.PI*2);
-        ctx.fill();
-      }
-
-      requestAnimationFrame(draw);
-    }
-
-    window.addEventListener("resize", resize);
-    resize();
-    draw();
-  </script>
-</body>
-</html>
+      heroTitle: "Ze
