@@ -1,154 +1,611 @@
-<script>
-  // ====== EDIT THESE SETTINGS ======
-  const SETTINGS = {
-    storeName: "ZeroPoint",
-    heroTitle: "ZeroPoint Market",
-    heroText: "", // (empty like you wanted)
-    discordUrl: "https://discord.com/",
-    contactEmail: "youremail@example.com"
-  };
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeroPoint</title>
 
-  // ✅ PUT YOUR STRIPE PAYMENT LINKS HERE (https://buy.stripe.com/....)
-  const PRODUCTS = [
-    { name:"Product 01", price:"$5",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_01" },
-    { name:"Product 02", price:"$9",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_02" },
-    { name:"Product 03", price:"$3",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_03" },
-    { name:"Product 04", price:"$12", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_04" }
-    // add more...
-  ];
+  <style>
+    :root{
+      --bg: #050607;
+      --panel: rgba(255,255,255,0.05);
+      --panelBorder: rgba(255,255,255,0.10);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --green: #32ff6a;
+      --green2: #00ff55;
+      --shadow: 0 14px 50px rgba(0,0,0,0.55);
+      --radius: 18px;
+    }
 
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, s => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
-    }[s]));
-  }
+    *{ box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
 
-  function renderProducts(list){
-    const grid = document.getElementById("grid");
-    if (!grid) return;
+    #stars{
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      width: 100%;
+      height: 100%;
+      display:block;
+      background: radial-gradient(1200px 600px at 50% 20%, rgba(50,255,106,0.12), transparent 60%),
+                  radial-gradient(900px 500px at 70% 70%, rgba(0,255,85,0.10), transparent 60%),
+                  linear-gradient(#030404, #050607);
+    }
+    .page-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(900px 500px at 50% 30%, rgba(0,0,0,0.35), rgba(0,0,0,0.72));
+      pointer-events:none;
+    }
 
-    grid.innerHTML = list.map((p) => `
+    .container{
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar{
+      background: rgba(0,255,85,0.18);
+      border-bottom: 1px solid rgba(50,255,106,0.25);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner{
+      padding: 10px 0;
+      text-align:center;
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+    }
+    .topbar a{
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .topbar a:hover{ text-decoration: underline; }
+
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(10,12,12,0.45);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .header-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 0;
+      gap: 16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .logo{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(50,255,106,0.12);
+      border: 1px solid rgba(50,255,106,0.25);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 0 30px rgba(50,255,106,0.08);
+      overflow:hidden;
+    }
+
+    nav{
+      display:none;
+      gap: 26px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    nav a{
+      color: rgba(255,255,255,0.85);
+      text-decoration:none;
+      font-weight: 650;
+    }
+    nav a:hover{ color: #fff; }
+
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+
+    .chip{
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.88);
+      font-size: 13px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      text-decoration: none;
+    }
+    .chip:hover{
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(50,255,106,0.25);
+      transform: translateY(-1px);
+    }
+
+    .hero{
+      padding: 64px 0 34px;
+      text-align:center;
+    }
+    .pill{
+      display:inline-flex;
+      gap: 8px;
+      align-items:center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(50,255,106,0.28);
+      background: rgba(50,255,106,0.10);
+      color: rgba(255,255,255,0.86);
+      font-size: 12px;
+      margin-bottom: 18px;
+    }
+    .hero h1{
+      font-size: clamp(34px, 4.2vw, 56px);
+      margin: 8px 0 10px;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 26px rgba(50,255,106,0.10);
+    }
+    .hero p{
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .cta{
+      margin-top: 22px;
+      display:flex;
+      justify-content:center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn{
+      border: 1px solid rgba(50,255,106,0.35);
+      background: rgba(50,255,106,0.16);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      box-shadow: 0 0 30px rgba(50,255,106,0.10);
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(50,255,106,0.22);
+      border-color: rgba(50,255,106,0.55);
+    }
+    .btn.secondary{
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.10);
+      box-shadow:none;
+    }
+    .btn.secondary:hover{
+      border-color: rgba(50,255,106,0.35);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .section-title{
+      text-align:center;
+      padding: 34px 0 14px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size: 34px;
+      letter-spacing: -0.2px;
+    }
+    .section-title p{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .searchbar{
+      margin-top: 18px;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+    .searchbar span{ opacity: 0.7; }
+    .searchbar input{
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline:none;
+      color: rgba(255,255,255,0.92);
+      font-size: 14px;
+    }
+    .searchbar input::placeholder{ color: rgba(255,255,255,0.45); }
+
+    .grid{
+      margin-top: 16px;
+      display:grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 14px;
+      padding-bottom: 70px;
+    }
+    @media (min-width: 640px){
+      .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      nav{ display:flex; }
+    }
+    @media (min-width: 980px){
+      .grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    .card{
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(50,255,106,0.25);
+      background: rgba(255,255,255,0.05);
+    }
+    .thumb{
+      height: 110px;
+      background:
+        radial-gradient(260px 110px at 30% 30%, rgba(50,255,106,0.18), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .thumb-badge{
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      border: 1px solid rgba(50,255,106,0.35);
+      background: rgba(50,255,106,0.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(50,255,106,0.95);
+      font-weight: 900;
+      box-shadow: 0 0 34px rgba(50,255,106,0.10);
+    }
+    .card-body{
+      padding: 14px 14px 14px;
+    }
+    .name{
+      font-weight: 900;
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+    .desc{
+      margin: 0 0 12px;
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+      line-height: 1.45;
+      min-height: 36px;
+    }
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .price{
+      font-weight: 900;
+      color: rgba(255,255,255,0.92);
+      font-size: 14px;
+    }
+
+    .buy-button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(50,255,106,0.40);
+      background: rgba(50,255,106,0.18);
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      white-space: nowrap;
+    }
+    .buy-button:hover{
+      transform: translateY(-1px);
+      background: rgba(50,255,106,0.24);
+      border-color: rgba(50,255,106,0.60);
+    }
+
+    footer{
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 18px 0 30px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+      text-align:center;
+    }
+    .small-links a{
+      color: rgba(50,255,106,0.9);
+      text-decoration:none;
+      font-weight: 800;
+    }
+    .small-links a:hover{ text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+  <canvas id="stars"></canvas>
+  <div class="page-overlay"></div>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      ⚡ Want support? Join Discord:
+      <a id="discordTop" href="#" target="_blank" rel="noopener">Open</a>
+    </div>
+  </div>
+
+  <header>
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="logo" title="Logo">ZP</div>
+        <span id="storeName">ZeroPoint</span>
+      </div>
+
+      <nav>
+        <a href="#home">HOME</a>
+        <a href="#products">PRODUCTS</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="chip" id="discordBtn" href="#" target="_blank" rel="noopener">Discord</a>
+        <a class="chip" id="contactBtn" href="mailto:youremail@example.com">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="home" class="hero">
+    <div class="container">
+      <div class="pill">✅ Fast delivery • ✅ Secure checkout • ✅ Support</div>
+      <h1 id="heroTitle">ZeroPoint Market</h1>
+      <p id="heroText"></p>
+
+      <div class="cta">
+        <a class="btn" href="#products">Our Products ➜</a>
+        <a class="btn secondary" id="discordCta" href="#" target="_blank" rel="noopener">Our Discord 💬</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="products">
+    <div class="container">
+      <div class="section-title">
+        <h2>OUR PRODUCTS</h2>
+        <p>Search and click buy — Stripe handles checkout.</p>
+      </div>
+
+      <div class="searchbar">
+        <span>🔎</span>
+        <input id="search" placeholder="Search for products..." />
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="container">
+      <div class="section-title">
+        <h2>FAQ</h2>
+        <p>Quick answers for customers.</p>
+      </div>
+
       <div class="card">
-        <div class="thumb">
-          <div class="thumb-badge">ZP</div>
-        </div>
         <div class="card-body">
-          <div class="name">${escapeHtml(p.name)}</div>
-          <div class="desc">${escapeHtml(p.desc || "")}</div>
-          <div class="row">
-            <div class="price">${escapeHtml(p.price || "")}</div>
-            <a class="buy-button" href="${p.url}" target="_blank" rel="noopener">Buy</a>
-          </div>
+          <p class="name">How do I receive my product?</p>
+          <p class="desc">Put your delivery info here (instant download, email delivery, Discord ticket, etc.).</p>
+
+          <p class="name">Refund policy?</p>
+          <p class="desc">Write your policy clearly here.</p>
+
+          <p class="name">Need help?</p>
+          <p class="desc">Tell customers how to contact you (Discord, email).</p>
         </div>
       </div>
-    `).join("");
-  }
+    </div>
+  </section>
 
-  // Run AFTER page loads (prevents “nothing shows” issues)
-  window.addEventListener("DOMContentLoaded", () => {
-    // Apply settings
-    const setText = (id, text) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = text;
+  <footer>
+    <div class="container">
+      <div class="small-links">
+        <a href="#home">Home</a> • <a href="#products">Products</a> • <a href="#faq">FAQ</a>
+      </div>
+      <div style="margin-top:10px;">© <span id="year"></span> <span id="storeNameFooter">ZeroPoint</span></div>
+    </div>
+  </footer>
+
+  <script>
+    const SETTINGS = {
+      storeName: "ZeroPoint",
+      heroTitle: "ZeroPoint Market",
+      heroText: "", // removed
+      discordUrl: "https://discord.com/",
+      contactEmail: "youremail@example.com"
     };
 
-    setText("storeName", SETTINGS.storeName);
-    setText("storeNameFooter", SETTINGS.storeName);
-    setText("heroTitle", SETTINGS.heroTitle);
-    setText("heroText", SETTINGS.heroText);
+    // Stripe Payment Links look like: https://buy.stripe.com/xxxxxx
+    const PRODUCTS = [
+      { name:"Product 01", price:"$5",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_01" },
+      { name:"Product 02", price:"$9",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_02" },
+      { name:"Product 03", price:"$3",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_03" },
+      { name:"Product 04", price:"$12", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_04" },
+      { name:"Product 05", price:"$7",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_05" },
+      { name:"Product 06", price:"$15", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_06" },
+      { name:"Product 07", price:"$4",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_07" },
+      { name:"Product 08", price:"$20", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_08" },
+      { name:"Product 09", price:"$8",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_09" },
+      { name:"Product 10", price:"$6",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_10" },
+      { name:"Product 11", price:"$10", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_11" },
+      { name:"Product 12", price:"$2",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_12" },
+      { name:"Product 13", price:"$11", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_13" },
+      { name:"Product 14", price:"$14", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_14" },
+      { name:"Product 15", price:"$5",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_15" },
+      { name:"Product 16", price:"$9",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_16" },
+      { name:"Product 17", price:"$13", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_17" },
+      { name:"Product 18", price:"$7",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_18" },
+      { name:"Product 19", price:"$16", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_19" },
+      { name:"Product 20", price:"$4",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_20" },
+      { name:"Product 21", price:"$18", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_21" },
+      { name:"Product 22", price:"$6",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_22" },
+      { name:"Product 23", price:"$9",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_23" },
+      { name:"Product 24", price:"$25", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_24" },
+    ];
+
+    document.getElementById("storeName").textContent = SETTINGS.storeName;
+    document.getElementById("storeNameFooter").textContent = SETTINGS.storeName;
+    document.getElementById("heroTitle").textContent = SETTINGS.heroTitle;
+    document.getElementById("heroText").textContent = SETTINGS.heroText;
 
     ["discordTop","discordBtn","discordCta"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.href = SETTINGS.discordUrl;
+      document.getElementById(id).href = SETTINGS.discordUrl;
     });
 
-    const contactBtn = document.getElementById("contactBtn");
-    if (contactBtn) contactBtn.href = `mailto:${SETTINGS.contactEmail}`;
+    document.getElementById("contactBtn").href = `mailto:${SETTINGS.contactEmail}`;
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    const yearEl = document.getElementById("year");
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    // ✅ Render products
-    renderProducts(PRODUCTS);
-
-    // Search
+    const grid = document.getElementById("grid");
     const search = document.getElementById("search");
-    if (search){
-      search.addEventListener("input", (e) => {
-        const q = e.target.value.toLowerCase().trim();
-        const filtered = PRODUCTS.filter(p =>
-          (p.name || "").toLowerCase().includes(q) ||
-          (p.desc || "").toLowerCase().includes(q)
-        );
-        renderProducts(filtered);
-      });
-    }
-  });
 
-  // ====== Moving green starfield (canvas) ======
-  const canvas = document.getElementById("stars");
-  const ctx = canvas.getContext("2d");
-  let w, h, dpr;
-  let stars = [];
-
-  function resize(){
-    dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    w = canvas.clientWidth = window.innerWidth;
-    h = canvas.clientHeight = window.innerHeight;
-    canvas.width = Math.floor(w * dpr);
-    canvas.height = Math.floor(h * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const count = Math.floor((w * h) / 9000);
-    stars = Array.from({length: count}, () => makeStar(true));
-  }
-
-  function makeStar(randomY){
-    return {
-      x: Math.random() * w,
-      y: (randomY ? Math.random() * h : -10),
-      r: Math.random() * 1.6 + 0.2,
-      a: Math.random() * 0.75 + 0.1,
-      s: Math.random() * 0.55 + 0.15,
-      tw: Math.random() * 0.6 + 0.4,
-    };
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,w,h);
-
-    ctx.globalCompositeOperation = "lighter";
-    ctx.fillStyle = "rgba(50,255,106,0.02)";
-    ctx.beginPath();
-    ctx.ellipse(w*0.35, h*0.35, w*0.35, h*0.18, 0, 0, Math.PI*2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(w*0.70, h*0.70, w*0.30, h*0.16, 0, 0, Math.PI*2);
-    ctx.fill();
-
-    ctx.globalCompositeOperation = "source-over";
-    for (const st of stars){
-      st.y += st.s;
-      if (st.y > h + 10) Object.assign(st, makeStar(false));
-
-      const tw = 0.55 + 0.45 * Math.sin((Date.now()/800) * st.tw + st.x*0.01);
-      const alpha = st.a * tw;
-
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(50,255,106,${alpha * 0.6})`;
-      ctx.arc(st.x, st.y, st.r * 2.2, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(200,255,215,${alpha})`;
-      ctx.arc(st.x, st.y, st.r, 0, Math.PI*2);
-      ctx.fill();
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+      }[s]));
     }
 
-    requestAnimationFrame(draw);
-  }
+    function render(list){
+      grid.innerHTML = list.map((p) => `
+        <div class="card">
+          <div class="thumb">
+            <div class="thumb-badge">ZP</div>
+          </div>
+          <div class="card-body">
+            <div class="name">${escapeHtml(p.name)}</div>
+            <div class="desc">${escapeHtml(p.desc || "")}</div>
+            <div class="row">
+              <div class="price">${escapeHtml(p.price || "")}</div>
+              <a class="buy-button" href="${p.url}" target="_blank" rel="noopener">Buy</a>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
 
-  window.addEventListener("resize", resize);
-  resize();
-  draw();
-</script>
+    render(PRODUCTS);
+
+    search.addEventListener("input", (e)=>{
+      const q = e.target.value.toLowerCase().trim();
+      render(PRODUCTS.filter(p =>
+        (p.name || "").toLowerCase().includes(q) ||
+        (p.desc || "").toLowerCase().includes(q)
+      ));
+    });
+
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+    let w, h, dpr;
+    let stars = [];
+
+    function resize(){
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      w = canvas.clientWidth = window.innerWidth;
+      h = canvas.clientHeight = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const count = Math.floor((w * h) / 9000);
+      stars = Array.from({length: count}, () => makeStar(true));
+    }
+
+    function makeStar(randomY){
+      return {
+        x: Math.random() * w,
+        y: (randomY ? Math.random() * h : -10),
+        r: Math.random() * 1.6 + 0.2,
+        a: Math.random() * 0.75 + 0.1,
+        s: Math.random() * 0.55 + 0.15,
+        tw: Math.random() * 0.6 + 0.4,
+      };
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,w,h);
+
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = "rgba(50,255,106,0.02)";
+      ctx.beginPath();
+      ctx.ellipse(w*0.35, h*0.35, w*0.35, h*0.18, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(w*0.70, h*0.70, w*0.30, h*0.16, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.globalCompositeOperation = "source-over";
+      for (const st of stars){
+        st.y += st.s;
+        if (st.y > h + 10) Object.assign(st, makeStar(false));
+
+        const tw = 0.55 + 0.45 * Math.sin((Date.now()/800) * st.tw + st.x*0.01);
+        const alpha = st.a * tw;
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(50,255,106,${alpha * 0.6})`;
+        ctx.arc(st.x, st.y, st.r * 2.2, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(200,255,215,${alpha})`;
+        ctx.arc(st.x, st.y, st.r, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    draw();
+  </script>
+</body>
+</html>
