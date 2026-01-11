@@ -300,6 +300,15 @@
       font-weight: 900;
       box-shadow: 0 0 34px rgba(50,255,106,0.10);
     }
+
+    /* ✅ ADDED: image style for product thumbnails */
+    .thumb-img{
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(50,255,106,0.20));
+    }
+
     .card-body{
       padding: 14px 14px 14px;
     }
@@ -466,7 +475,13 @@
 
     // Stripe Payment Links look like: https://buy.stripe.com/xxxxxx
     const PRODUCTS = [
-      { name:"Product 01", price:"$5",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_01" },
+      {
+        name: "Donate",
+        price: "$5",
+        desc: "All donates is very thankful to us, donating us for bring more into the website",
+        url: "https://buy.stripe.com/REPLACE_ME_01",
+        img: "SmallIcon-Donate.webp"
+      },
       { name:"Product 02", price:"$9",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_02" },
       { name:"Product 03", price:"$3",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_03" },
       { name:"Product 04", price:"$12", desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_04" },
@@ -513,11 +528,16 @@
       }[s]));
     }
 
+    /* ✅ UPDATED: shows image if p.img exists */
     function render(list){
       grid.innerHTML = list.map((p) => `
         <div class="card">
           <div class="thumb">
-            <div class="thumb-badge">ZP</div>
+            ${
+              p.img
+                ? `<img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name || "")}" class="thumb-img">`
+                : `<div class="thumb-badge">ZP</div>`
+            }
           </div>
           <div class="card-body">
             <div class="name">${escapeHtml(p.name)}</div>
