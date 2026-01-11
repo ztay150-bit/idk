@@ -286,6 +286,7 @@
       align-items:center;
       justify-content:center;
       border-bottom: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
     }
     .thumb-badge{
       width: 56px;
@@ -301,12 +302,12 @@
       box-shadow: 0 0 34px rgba(50,255,106,0.10);
     }
 
-    /* ✅ ADDED: image style for product thumbnails */
+    /* ✅ Added for product images */
     .thumb-img{
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 18px rgba(50,255,106,0.20));
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
     }
 
     .card-body{
@@ -473,16 +474,18 @@
       contactEmail: "youremail@example.com"
     };
 
+    // ✅ Donate picture (embedded)
+    const DONATE_IMG =
+      "data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http%3A//www.w3.org/2000/svg%22%20width=%22800%22%20height=%22300%22%20viewBox=%220%200%20800%20300%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset=%220%22%20stop-color=%22%2332ff6a%22%20stop-opacity=%220.9%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset=%221%22%20stop-color=%22%2300ff55%22%20stop-opacity=%220.55%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%20%20%3CradialGradient%20id=%22rg%22%20cx=%2230%25%22%20cy=%2230%25%22%20r=%2280%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset=%220%22%20stop-color=%22%2332ff6a%22%20stop-opacity=%220.25%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset=%221%22%20stop-color=%22%23000000%22%20stop-opacity=%220%22/%3E%0A%20%20%20%20%3C/radialGradient%3E%0A%20%20%20%20%3Cfilter%20id=%22glow%22%20x=%22-30%25%22%20y=%22-30%25%22%20width=%22160%25%22%20height=%22160%25%22%3E%0A%20%20%20%20%20%20%3CfeGaussianBlur%20stdDeviation=%226%22%20result=%22b%22/%3E%0A%20%20%20%20%20%20%3CfeColorMatrix%20in=%22b%22%20type=%22matrix%22%0A%20%20%20%20%20%20%20%20values=%220%200%200%200%200.196%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%200%200%200%200%201%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%200%200%200%200%200.416%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%200%200%200%200.9%200%22%20result=%22g%22/%3E%0A%20%20%20%20%20%20%3CfeMerge%3E%0A%20%20%20%20%20%20%20%20%3CfeMergeNode%20in=%22g%22/%3E%0A%20%20%20%20%20%20%20%20%3CfeMergeNode%20in=%22SourceGraphic%22/%3E%0A%20%20%20%20%20%20%3C/feMerge%3E%0A%20%20%20%20%3C/filter%3E%0A%20%20%3C/defs%3E%0A%0A%20%20%3Crect%20width=%22800%22%20height=%22300%22%20rx=%2226%22%20fill=%22%23050607%22/%3E%0A%20%20%3Crect%20width=%22800%22%20height=%22300%22%20rx=%2226%22%20fill=%22url(%23rg)%22/%3E%0A%20%20%3Cpath%20d=%22M0%20250%20C200%20170%20380%20320%20800%20200%20L800%20300%20L0%20300%20Z%22%20fill=%22rgba(255,255,255,0.04)%22/%3E%0A%0A%20%20%3Cg%20transform=%22translate(95%2075)%22%20filter=%22url(%23glow)%22%3E%0A%20%20%20%20%3Cpath%20d=%22M80%20120%20c20%20-22%2045%20-34%2078%20-34%20h10%20c10%200%2018%208%2018%2018v22%20c0%2012%20-10%2022%20-22%2022H118%0A%20%20%20%20%20%20%20%20%20%20%20%20%20c-15%200%20-28%20-5%20-38%20-15l-28%20-28z%22%0A%20%20%20%20%20%20%20%20%20%20fill=%22rgba(255,255,255,0.08)%22%20stroke=%22rgba(50,255,106,0.55)%22%20stroke-width=%223%22%20/%3E%0A%20%20%20%20%3Cpath%20d=%22M60%20118%20l20%2020%20c12%2012%2027%2018%2044%2018h54%22%0A%20%20%20%20%20%20%20%20fill=%22none%22%20stroke=%22rgba(50,255,106,0.55)%22%20stroke-width=%223%22%20stroke-linecap=%22round%22/%3E%0A%0A%20%20%20%20%3Cpath%20d=%22M165%2048%0A%20%20%20%20%20%20%20%20%20%20%20%20%20c0%20-15%2012%20-27%2027%20-27%0A%20%20%20%20%20%20%20%20%20%20%20%20%20c11%200%2021%207%2025%2016%0A%20%20%20%20%20%20%20%20%20%20%20%20%20c4%20-9%2014%20-16%2025%20-16%0A%20%20%20%20%20%20%20%20%20%20%20%20%20c15%200%2027%2012%2027%2027%0A%20%20%20%20%20%20%20%20%20%20%20%20%20c0%2026%20-24%2044%20-52%2064%0A%20%20%20%20%20%20%20%20%20%20%20%20%20c-28%20-20%20-52%20-38%20-52%20-64z%22%0A%20%20%20%20%20%20%20%20fill=%22url(%23g)%22%20stroke=%22rgba(255,255,255,0.22)%22%20stroke-width=%222%22/%3E%0A%20%20%20%20%3Ccircle%20cx=%22220%22%20cy=%2255%22%20r=%2248%22%20fill=%22none%22%20stroke=%22rgba(50,255,106,0.20)%22%20stroke-width=%222%22/%3E%0A%20%20%3C/g%3E%0A%0A%20%20%3Ctext%20x=%22350%22%20y=%22125%22%20fill=%22rgba(255,255,255,0.92)%22%20font-family=%22ui-sans-serif,system-ui%22%20font-size=%2254%22%20font-weight=%22900%22%20letter-spacing=%221%22%3EDONATE%3C/text%3E%0A%20%20%3Ctext%20x=%22352%22%20y=%22172%22%20fill=%22rgba(255,255,255,0.65)%22%20font-family=%22ui-sans-serif,system-ui%22%20font-size=%2220%22%20font-weight=%22700%22%3ESupport%20ZeroPoint%20%E2%80%94%20help%20us%20add%20more%20to%20the%20website%3C/text%3E%0A%0A%20%20%3Crect%20x=%22350%22%20y=%22200%22%20width=%22170%22%20height=%2244%22%20rx=%2222%22%20fill=%22rgba(50,255,106,0.14)%22%20stroke=%22rgba(50,255,106,0.40)%22/%3E%0A%20%20%3Ctext%20x=%22435%22%20y=%22229%22%20text-anchor=%22middle%22%20fill=%22rgba(255,255,255,0.92)%22%20font-family=%22ui-sans-serif,system-ui%22%20font-size=%2218%22%20font-weight=%22900%22%3ETHANK%20YOU%3C/text%3E%0A%3C/svg%3E";
+
     // Stripe Payment Links look like: https://buy.stripe.com/xxxxxx
     const PRODUCTS = [
       {
-        name: "Donate",
-        price: "$5",
-        desc: "All donates is very thankful to us, donating us for bring more into the website",
-        url: "https://buy.stripe.com/REPLACE_ME_01",
-        img: "const DONATE_IMG =
-  "data:image/webp;base64,UklGRhQRAABXRUJQVlA4IAgRAACQJQCdASqAAQABPlEoj0oAqk0mlEelqP0lA6gA/ubc3+eX8dXvO06wqgLqX8l3wqg7a0j2oS2mN1mC8yS0oKX4oQ3y5v8vD4F9kCw1l3v2qz8Jd0WnYt3vC9m0ZpQy7Gm+o5mU1cM9J2xw0vF2m4vYxQvVJw0m5uXyZy9m0u2y6e7JgYgJvS5m7Wm6n9cKQ4l1XnD7r7zT0E8cQfQ4wqk9qJf7b2qV5d0p6F+gE3Yk5G2Hh7QmXfW3QvKp3k8y+qFf9yQ0mVYl8Gm9gQ3iQh0pJHq3p0p8O3nQm6mG2g7wG0y2VYyG8c4b1m4p8SxqjG8t1bq8t4y8y1H8vZ5Zz9m3g3G8cV0m0XxZfG3mYxqg3nq2l0wU9mHq6m+V2m9Jm+oXoCw6Qm1k2qg1m7m+o1m9KZ7xg8c0xv3mY1nqg1qg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nqg0nq
-"
+        name:"Donate",
+        price:"$5",
+        desc:"All donates is very thankful to us, donating us for bring more into the website",
+        url:"https://buy.stripe.com/REPLACE_ME_01",
+        img: DONATE_IMG
       },
       { name:"Product 02", price:"$9",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_02" },
       { name:"Product 03", price:"$3",  desc:"Short description here.", url:"https://buy.stripe.com/REPLACE_ME_03" },
@@ -530,27 +533,30 @@
       }[s]));
     }
 
-    /* ✅ UPDATED: shows image if p.img exists */
+    // ✅ Updated render to show image for Product 1 (or any product with img)
     function render(list){
-      grid.innerHTML = list.map((p) => `
-        <div class="card">
-          <div class="thumb">
-            ${
-              p.img
-                ? `<img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name || "")}" class="thumb-img">`
-                : `<div class="thumb-badge">ZP</div>`
-            }
-          </div>
-          <div class="card-body">
-            <div class="name">${escapeHtml(p.name)}</div>
-            <div class="desc">${escapeHtml(p.desc || "")}</div>
-            <div class="row">
-              <div class="price">${escapeHtml(p.price || "")}</div>
-              <a class="buy-button" href="${p.url}" target="_blank" rel="noopener">Buy</a>
+      grid.innerHTML = list.map((p) => {
+        const hasImg = !!p.img;
+        const imgTag = hasImg
+          ? `<img class="thumb-img" src="${p.img}" alt="${escapeHtml(p.name)}" />`
+          : `<div class="thumb-badge">ZP</div>`;
+
+        return `
+          <div class="card">
+            <div class="thumb">
+              ${imgTag}
+            </div>
+            <div class="card-body">
+              <div class="name">${escapeHtml(p.name)}</div>
+              <div class="desc">${escapeHtml(p.desc || "")}</div>
+              <div class="row">
+                <div class="price">${escapeHtml(p.price || "")}</div>
+                <a class="buy-button" href="${p.url}" target="_blank" rel="noopener">Buy</a>
+              </div>
             </div>
           </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     render(PRODUCTS);
